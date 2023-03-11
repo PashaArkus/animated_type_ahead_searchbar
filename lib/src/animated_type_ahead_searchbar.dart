@@ -26,7 +26,7 @@ class AnimatedTypeAheadSearchBar extends StatefulWidget {
   final OverlayVisibilityMode? clearButtonMode;
   final BoxDecoration? textBoxDecoration;
   final EdgeInsets? textBoxPadding;
-  final CupertinoSuggestionsBoxDecoration? suggestionBoxDecoration;
+  final SuggestionsBoxDecoration? suggestionBoxDecoration;
   final Function itemBuilder;
   final Function onSuggestionSelected;
   final Function suggestionCallback;
@@ -152,8 +152,8 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
   }
 
   final TextEditingController _typeAheadController = TextEditingController();
-  final CupertinoSuggestionsBoxController _suggestionsBoxController =
-      CupertinoSuggestionsBoxController();
+  final SuggestionsBoxController _suggestionsBoxController =
+      SuggestionsBoxController();
 
   @override
   Widget build(BuildContext context) {
@@ -208,6 +208,14 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   child: AnimatedBuilder(
+                    builder: (context, widget) {
+                      ///Using Transform.rotate to rotate the suffix icon when it gets expanded
+                      return Transform.rotate(
+                        angle: _con.value * 2.0 * pi,
+                        child: widget,
+                      );
+                    },
+                    animation: _con,
                     child: GestureDetector(
                       onTap: () {
                         try {
@@ -241,14 +249,6 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                             size: 20.0,
                           ),
                     ),
-                    builder: (context, widget) {
-                      ///Using Transform.rotate to rotate the suffix icon when it gets expanded
-                      return Transform.rotate(
-                        angle: _con.value * 2.0 * pi,
-                        child: widget,
-                      );
-                    },
-                    animation: _con,
                   ),
                 ),
               ),
@@ -272,54 +272,43 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                       : (MediaQuery.of(context).size.width * 0.88) * 0.78,
                   child: Material(
                     // color: Colors.transparent,
-                    child: CupertinoTypeAheadFormField(
-                        getImmediateSuggestions:
-                            widget.getImmediateSuggestions ?? false,
-                        autovalidateMode: widget.autovalidateMode ??
-                            AutovalidateMode.disabled,
-                        animationDuration: const Duration(milliseconds: 0),
-                        suggestionsBoxController: _suggestionsBoxController,
-                        loadingBuilder: (c) {
-                          return widget.loadingBuilder ?? Container();
-                        },
-                        errorBuilder: (context, o) {
-                          return widget.errorBuilder ?? Container();
-                        },
-                        noItemsFoundBuilder: (context) {
-                          return widget.noItemsFoundBuilder ?? Container();
-                        },
-                        textFieldConfiguration: CupertinoTextFieldConfiguration(
-                          placeholder: widget.hintText ?? 'Search',
-                          controller: _typeAheadController,
-                          clearButtonMode: widget.clearButtonMode ??
-                              OverlayVisibilityMode.always,
-                          decoration: widget.textBoxDecoration ??
-                              BoxDecoration(
+                    child: TypeAheadFormField(
+                      getImmediateSuggestions:
+                          widget.getImmediateSuggestions ?? false,
+                      autovalidateMode:
+                          widget.autovalidateMode ?? AutovalidateMode.disabled,
+                      animationDuration: const Duration(milliseconds: 0),
+                      suggestionsBoxController: _suggestionsBoxController,
+                      loadingBuilder: (c) {
+                        return widget.loadingBuilder ?? Container();
+                      },
+                      errorBuilder: (context, o) {
+                        return widget.errorBuilder ?? Container();
+                      },
+                      noItemsFoundBuilder: (context) {
+                        return widget.noItemsFoundBuilder ?? Container();
+                      },
+                      textFieldConfiguration: TextFieldConfiguration(
+                        focusNode: focusNode,
+                        controller: _typeAheadController,
+                        autofocus: true,
+                      ),
+                      suggestionsBoxDecoration:
+                          widget.suggestionBoxDecoration ??
+                              SuggestionsBoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(6)),
-                          padding: widget.textBoxPadding ??
-                              const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 9),
-                          prefix: widget.showPrefixIconTextField ?? true
-                              ? widget.prefixIconTextField ??
-                                  const Padding(
-                                    padding: EdgeInsets.only(left: 0),
-                                    child: Icon(Icons.search),
-                                  )
-                              : Container(),
-                        ),
-                        suggestionsBoxDecoration:
-                            widget.suggestionBoxDecoration ??
-                                CupertinoSuggestionsBoxDecoration(
-                                    color: Colors.black,
-                                    border: Border.all(width: 0),
-                                    borderRadius: BorderRadius.circular(8)),
-                        suggestionsCallback: (pattern) async =>
-                            widget.suggestionCallback(pattern),
-                        itemBuilder: (context, suggestion) =>
-                            widget.itemBuilder(suggestion),
-                        onSuggestionSelected: (suggestion) =>
-                            widget.onSuggestionSelected(suggestion)),
+                                  //border: Border.all(width: 0),
+                                  borderRadius: BorderRadius.circular(8)),
+                      suggestionsCallback: (pattern) async =>
+                          widget.suggestionCallback(pattern),
+                      itemBuilder: (context, suggestion) =>
+                          widget.itemBuilder(suggestion),
+                      onSuggestionSelected: (suggestion) {
+                        unfocusKeyboard();
+                        _typeAheadController.clear();
+                        widget.onSuggestionSelected(suggestion);
+                      },
+                    ),
                   ),
                 ),
               ),
