@@ -43,9 +43,9 @@ class HomePage extends StatelessWidget {
           child: AnimatedTypeAheadSearchBar(
             width: MediaQuery.of(context).size.width * 0.88,
             onSuffixTap: null,
+              autoFocus: true,
             noItemsFoundBuilder: Text('dfgdsfgd'),
             itemBuilder: (String suggestion) {
-              print(suggestion.length);
               return Material(
                 color: Colors.white,
                 borderOnForeground: false,

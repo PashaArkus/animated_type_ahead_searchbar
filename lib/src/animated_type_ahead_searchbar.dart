@@ -101,7 +101,7 @@ class AnimatedTypeAheadSearchBar extends StatefulWidget {
     this.rtl = false,
 
     /// make the keyboard to show automatically when the searchbar is expanded
-    this.autoFocus = true,
+    this.autoFocus = false,
 
     /// close the search on suffix tap
     this.closeSearchOnSuffixTap = false,
@@ -291,7 +291,6 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                       textFieldConfiguration: TextFieldConfiguration(
                         focusNode: focusNode,
                         controller: _typeAheadController,
-                        autofocus: widget.autoFocus?? false,
                       ),
                       suggestionsBoxDecoration:
                           widget.suggestionBoxDecoration ??
