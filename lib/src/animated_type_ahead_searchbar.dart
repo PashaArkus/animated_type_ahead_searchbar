@@ -304,6 +304,10 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                       onSuggestionSelected: (suggestion) {
                         unfocusKeyboard();
                         _typeAheadController.clear();
+                        _con.reverse();
+                        setState(() {
+                          toggle = 0;
+                        });
                         widget.onSuggestionSelected(suggestion);
                       },
                     ),
