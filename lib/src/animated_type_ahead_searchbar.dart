@@ -291,13 +291,12 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                       textFieldConfiguration: TextFieldConfiguration(
                         focusNode: focusNode,
                         controller: _typeAheadController,
-                        autofocus: true,
+                        autofocus: widget.autoFocus?? false,
                       ),
                       suggestionsBoxDecoration:
                           widget.suggestionBoxDecoration ??
                               SuggestionsBoxDecoration(
                                   color: Colors.white,
-                                  //border: Border.all(width: 0),
                                   borderRadius: BorderRadius.circular(8)),
                       suggestionsCallback: (pattern) async =>
                           widget.suggestionCallback(pattern),
