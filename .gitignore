@@ -27,3 +27,8 @@
 .dart_tool/
 .packages
 build/
+
+# Generated files
+.flutter-plugins*
+.metadata
+.dart_tool/
