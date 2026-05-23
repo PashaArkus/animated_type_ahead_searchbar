@@ -26,13 +26,13 @@ class AnimatedTypeAheadSearchBar extends StatefulWidget {
   final OverlayVisibilityMode? clearButtonMode;
   final BoxDecoration? textBoxDecoration;
   final EdgeInsets? textBoxPadding;
-  final SuggestionsBoxDecoration? suggestionBoxDecoration;
+  final BoxDecoration? suggestionBoxDecoration;
   final Function itemBuilder;
   final Function onSuggestionSelected;
   final Function suggestionCallback;
 
   const AnimatedTypeAheadSearchBar({
-    Key? key,
+    super.key,
 
     ///get immediate suggestions : default is false
     this.getImmediateSuggestions,
@@ -65,16 +65,10 @@ class AnimatedTypeAheadSearchBar extends StatefulWidget {
     required this.width,
 
     ///suffixicon is optional
-    this.suffixIcon = const Icon(
-      Icons.close,
-      size: 20.0,
-    ),
+    this.suffixIcon = const Icon(Icons.close, size: 20.0),
 
     ///prefixicon is optional
-    this.prefixIcon = const Icon(
-      Icons.search,
-      size: 20.0,
-    ),
+    this.prefixIcon = const Icon(Icons.search, size: 20.0),
 
     ///hintText is optional,default value is Search
     this.hintText = 'Search...',
@@ -114,7 +108,7 @@ class AnimatedTypeAheadSearchBar extends StatefulWidget {
 
     ///Default value is Container()
     this.noItemsFoundBuilder,
-  }) : super(key: key);
+  });
 
   @override
   _AnimatedTypeAheadSearchBarState createState() =>
@@ -144,7 +138,7 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
     );
   }
 
-  unfocusKeyboard() {
+  void unfocusKeyboard() {
     final FocusScopeNode currentScope = FocusScope.of(context);
     if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
       FocusManager.instance.primaryFocus?.unfocus();
@@ -152,8 +146,8 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
   }
 
   final TextEditingController _typeAheadController = TextEditingController();
-  final SuggestionsBoxController _suggestionsBoxController =
-      SuggestionsBoxController();
+  final SuggestionsController _suggestionsBoxController =
+      SuggestionsController();
 
   @override
   Widget build(BuildContext context) {
@@ -168,8 +162,9 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
 
       ///Using Animated container to expand and shrink the widget
       child: AnimatedContainer(
-        duration:
-            Duration(milliseconds: widget.animationDurationInMilli ?? 375),
+        duration: Duration(
+          milliseconds: widget.animationDurationInMilli ?? 375,
+        ),
         height: 48.0,
         width: (toggle == 0)
             ? 48.0
@@ -193,7 +188,8 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
             ///Using Animated Positioned widget to expand and shrink the widget
             AnimatedPositioned(
               duration: Duration(
-                  milliseconds: widget.animationDurationInMilli ?? 375),
+                milliseconds: widget.animationDurationInMilli ?? 375,
+              ),
               top: 6.0,
               right: 7.0,
               curve: Curves.easeOut,
@@ -243,11 +239,9 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                       },
 
                       ///suffixIcon is of type Icon
-                      child: widget.suffixIcon ??
-                          const Icon(
-                            Icons.close,
-                            size: 20.0,
-                          ),
+                      child:
+                          widget.suffixIcon ??
+                          const Icon(Icons.close, size: 20.0),
                     ),
                   ),
                 ),
@@ -255,7 +249,8 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
             ),
             AnimatedPositioned(
               duration: Duration(
-                  milliseconds: widget.animationDurationInMilli ?? 375),
+                milliseconds: widget.animationDurationInMilli ?? 375,
+              ),
               left: (toggle == 0) ? 0.0 : 37.0,
               curve: Curves.easeOut,
               top: 5.0,
@@ -272,36 +267,28 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                       : (MediaQuery.of(context).size.width * 0.88) * 0.78,
                   child: Material(
                     // color: Colors.transparent,
-                    child: TypeAheadFormField(
-                      getImmediateSuggestions:
-                          widget.getImmediateSuggestions ?? false,
-                      autovalidateMode:
-                          widget.autovalidateMode ?? AutovalidateMode.disabled,
+                    child: TypeAheadField(
                       animationDuration: const Duration(milliseconds: 0),
-                      suggestionsBoxController: _suggestionsBoxController,
+                      suggestionsController: _suggestionsBoxController,
                       loadingBuilder: (c) {
                         return widget.loadingBuilder ?? Container();
                       },
                       errorBuilder: (context, o) {
                         return widget.errorBuilder ?? Container();
                       },
-                      noItemsFoundBuilder: (context) {
-                        return widget.noItemsFoundBuilder ?? Container();
+                      decorationBuilder: (context, child) {
+                        return Material(
+                          type: MaterialType.card,
+                          elevation: 4,
+                          borderRadius: BorderRadius.circular(8),
+                          child: child,
+                        );
                       },
-                      textFieldConfiguration: TextFieldConfiguration(
-                        focusNode: focusNode,
-                        controller: _typeAheadController,
-                      ),
-                      suggestionsBoxDecoration:
-                          widget.suggestionBoxDecoration ??
-                              SuggestionsBoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8)),
                       suggestionsCallback: (pattern) async =>
                           widget.suggestionCallback(pattern),
                       itemBuilder: (context, suggestion) =>
                           widget.itemBuilder(suggestion),
-                      onSuggestionSelected: (suggestion) {
+                      onSelected: (suggestion) {
                         unfocusKeyboard();
                         _typeAheadController.clear();
                         _con.reverse();
@@ -328,46 +315,37 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                 ///if the toggle is 0, which means it's closed, so tapping on it will expand the widget.
                 ///prefixIcon is of type Icon
                 icon: toggle == 1
-                    ? const Icon(
-                        Icons.arrow_back_ios,
-                        size: 20,
-                      )
-                    : widget.prefixIcon ??
-                        const Icon(
-                          Icons.search,
-                          size: 20.0,
-                        ),
+                    ? const Icon(Icons.arrow_back_ios, size: 20)
+                    : widget.prefixIcon ?? const Icon(Icons.search, size: 20.0),
 
                 onPressed: () {
-                  setState(
-                    () {
-                      ///if the search bar is closed
-                      if (toggle == 0) {
-                        toggle = 1;
-                        setState(() {
-                          ///if the autoFocus is true, the keyboard will pop open, automatically
-                          if (widget.autoFocus == true) {
-                            FocusScope.of(context).requestFocus(focusNode);
-                          }
-                        });
+                  setState(() {
+                    ///if the search bar is closed
+                    if (toggle == 0) {
+                      toggle = 1;
+                      setState(() {
+                        ///if the autoFocus is true, the keyboard will pop open, automatically
+                        if (widget.autoFocus == true) {
+                          FocusScope.of(context).requestFocus(focusNode);
+                        }
+                      });
 
-                        ///forward == expand
-                        _con.forward();
-                      } else {
-                        ///if the search bar is expanded
-                        toggle = 0;
+                      ///forward == expand
+                      _con.forward();
+                    } else {
+                      ///if the search bar is expanded
+                      toggle = 0;
 
-                        ///if the autoFocus is true, the keyboard will close, automatically
-                        setState(() {
-                          if (widget.autoFocus == true) unfocusKeyboard();
-                          _typeAheadController.clear();
-                        });
+                      ///if the autoFocus is true, the keyboard will close, automatically
+                      setState(() {
+                        if (widget.autoFocus == true) unfocusKeyboard();
+                        _typeAheadController.clear();
+                      });
 
-                        ///reverse == close
-                        _con.reverse();
-                      }
-                    },
-                  );
+                      ///reverse == close
+                      _con.reverse();
+                    }
+                  });
                 },
               ),
             ),
