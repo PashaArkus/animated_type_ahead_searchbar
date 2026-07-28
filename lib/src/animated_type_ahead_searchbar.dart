@@ -115,12 +115,11 @@ class AnimatedTypeAheadSearchBar extends StatefulWidget {
       _AnimatedTypeAheadSearchBarState();
 }
 
-///toggle - 0 => false or closed
-///toggle 1 => true or open
-int toggle = 0;
-
 class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
     with SingleTickerProviderStateMixin {
+  ///toggle - 0 => false or closed
+  ///toggle 1 => true or open
+  int _toggle = 0;
   ///initializing the AnimationController
   late AnimationController _con;
   FocusNode focusNode = FocusNode();
@@ -166,7 +165,7 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
           milliseconds: widget.animationDurationInMilli ?? 375,
         ),
         height: 48.0,
-        width: (toggle == 0)
+        width: (_toggle == 0)
             ? 48.0
             : widget.width ?? MediaQuery.of(context).size.width * 0.88,
         curve: Curves.easeOut,
@@ -194,7 +193,7 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
               right: 7.0,
               curve: Curves.easeOut,
               child: AnimatedOpacity(
-                opacity: (toggle == 0) ? 0.0 : 1.0,
+                opacity: (_toggle == 0) ? 0.0 : 1.0,
                 duration: const Duration(milliseconds: 200),
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
@@ -228,7 +227,7 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                           if (widget.closeSearchOnSuffixTap == true) {
                             unfocusKeyboard();
                             setState(() {
-                              toggle = 0;
+                              _toggle = 0;
                               _typeAheadController.clear();
                             });
                           }
@@ -251,13 +250,13 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
               duration: Duration(
                 milliseconds: widget.animationDurationInMilli ?? 375,
               ),
-              left: (toggle == 0) ? 0.0 : 37.0,
+              left: (_toggle == 0) ? 0.0 : 37.0,
               curve: Curves.easeOut,
               top: 5.0,
 
               ///Using Animated opacity to change the opacity of th textField while expanding
               child: AnimatedOpacity(
-                opacity: (toggle == 0) ? 0.0 : 1.0,
+                opacity: (_toggle == 0) ? 0.0 : 1.0,
                 duration: const Duration(milliseconds: 200),
                 child: Container(
                   padding: const EdgeInsets.only(left: 12),
@@ -268,7 +267,7 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                   child: Material(
                     // color: Colors.transparent,
                     child: TypeAheadField(
-                      animationDuration: const Duration(milliseconds: 0),
+                      animationDuration: const Duration(milliseconds: 1),
                       suggestionsController: _suggestionsBoxController,
                       loadingBuilder: (c) {
                         return widget.loadingBuilder ?? Container();
@@ -293,7 +292,7 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                         _typeAheadController.clear();
                         _con.reverse();
                         setState(() {
-                          toggle = 0;
+                          _toggle = 0;
                         });
                         widget.onSuggestionSelected(suggestion);
                       },
@@ -314,15 +313,15 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                 ///if toggle is 1, which means it's open. so show the back icon, which will close it.
                 ///if the toggle is 0, which means it's closed, so tapping on it will expand the widget.
                 ///prefixIcon is of type Icon
-                icon: toggle == 1
+                icon: _toggle == 1
                     ? const Icon(Icons.arrow_back_ios, size: 20)
                     : widget.prefixIcon ?? const Icon(Icons.search, size: 20.0),
 
                 onPressed: () {
                   setState(() {
                     ///if the search bar is closed
-                    if (toggle == 0) {
-                      toggle = 1;
+                    if (_toggle == 0) {
+                      _toggle = 1;
                       setState(() {
                         ///if the autoFocus is true, the keyboard will pop open, automatically
                         if (widget.autoFocus == true) {
@@ -334,7 +333,7 @@ class _AnimatedTypeAheadSearchBarState extends State<AnimatedTypeAheadSearchBar>
                       _con.forward();
                     } else {
                       ///if the search bar is expanded
-                      toggle = 0;
+                      _toggle = 0;
 
                       ///if the autoFocus is true, the keyboard will close, automatically
                       setState(() {
